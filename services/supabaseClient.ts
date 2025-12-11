@@ -2,8 +2,8 @@ import { createClient } from '@supabase/supabase-js';
 
 // ⚠️ IMPORTANTE: SOSTITUISCI QUESTE STRINGHE CON I DATI DEL TUO PROGETTO SUPABASE
 // Li trovi in Settings -> API su Supabase.com
-const SUPABASE_URL = 'INSERISCI_QUI_TUO_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'INSERISCI_QUI_TUA_SUPABASE_ANON_KEY';
+const SUPABASE_URL = 'https://hqmvmvppaymazmfnnmfd.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhxbXZtdnBwYXltYXptZm5ubWZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU0NjQwMTIsImV4cCI6MjA4MTA0MDAxMn0.oWSjmbVhK54RLK6OdsUTzGZmmuDrI5jKjSj3j2kVxng';
 
 // Safety check to prevent app crash if keys are placeholders
 const isValidUrl = (url: string) => url.startsWith('https://');
