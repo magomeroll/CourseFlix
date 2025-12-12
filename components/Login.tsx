@@ -84,7 +84,7 @@ const Login: React.FC = () => {
         <div className="mt-8 text-neutral-400 text-sm">
           <p className="mb-4">
             Prima volta su CourseFlix? <br/>
-            <a href="https://courseflix.it" className="text-white hover:underline">Acquista l'accesso sul sito ufficiale.</a>
+            <a href="https://www.courseflix.it" className="text-white hover:underline">Acquista l'accesso sul sito ufficiale.</a>
           </p>
           <p className="text-xs text-neutral-500 flex items-center gap-1">
             <Lock className="w-3 h-3" /> Pagina protetta da Google reCAPTCHA.
