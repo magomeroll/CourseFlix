@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guida Utente - CourseFlix AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #000; color: #e5e5e5; }
+        .step-number {
+            background: #dc2626;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .highlight { color: #dc2626; font-weight: bold; }
+        .box { background: #111; border: 1px solid #333; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+        a { color: #60a5fa; text-decoration: underline; }
+    </style>
+</head>
+<body class="p-6 md:p-12 max-w-4xl mx-auto">
+
+    <header class="mb-12 border-b border-gray-800 pb-8">
+        <h1 class="text-4xl font-extrabold text-white mb-2">Guida all'uso <span class="text-red-600">CourseFlix</span></h1>
+        <p class="text-gray-400 text-lg">Segui questi semplici passaggi per creare il tuo primo corso in meno di 2 minuti.</p>
+    </header>
+
+    <!-- STEP 1: API KEY -->
+    <div class="box border-red-900/50 bg-red-950/10">
+        <div class="flex items-start gap-4">
+            <div class="step-number">1</div>
+            <div>
+                <h2 class="text-2xl font-bold text-white mb-4">Configurare la Chiave API (Gratis)</h2>
+                <p class="mb-4">Per far funzionare l'Intelligenza Artificiale, hai bisogno di una "chiave" gratuita fornita da Google. È facile da ottenere:</p>
+                
+                <ol class="list-decimal list-inside space-y-3 ml-2 text-gray-300">
+                    <li>Apri questo link: <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>.</li>
+                    <li>Accedi con il tuo account <strong>Google/Gmail</strong>.</li>
+                    <li>Clicca sul pulsante blu <strong>"Create API key"</strong>.</li>
+                    <li>Seleziona "Create API key in new project" (o un progetto esistente se ne hai uno).</li>
+                    <li>Apparirà una stringa lunga che inizia con <code>AIza...</code>. <strong>Copiala</strong>.</li>
+                    <li>Torna su CourseFlix, clicca l'icona dell'<strong>Ingranaggio</strong> in alto a destra.</li>
+                    <li>Incolla la chiave e clicca <strong>Salva</strong>.</li>
+                </ol>
+                <div class="mt-4 bg-black p-3 rounded text-sm text-gray-400 border border-gray-700">
+                    💡 <strong>Nota:</strong> Questa operazione va fatta una volta sola. Il browser ricorderà la tua chiave.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 2: CREAZIONE -->
+    <div class="box">
+        <div class="flex items-start gap-4">
+            <div class="step-number">2</div>
+            <div>
+                <h2 class="text-2xl font-bold text-white mb-4">Generare un Corso</h2>
+                <ul class="space-y-3 text-gray-300">
+                    <li>Nella schermata principale, scrivi l'argomento che ti interessa (es. <em>"Yoga per la schiena"</em> o <em>"Programmare in Python"</em>) e premi Invio.</li>
+                    <li>L'IA ti suggerirà prima delle <strong>Macro-Categorie</strong>. Scegline una.</li>
+                    <li>Successivamente ti proporrà delle <strong>Nicchie Specifiche</strong>. Seleziona quella che preferisci.</li>
+                    <li>Attendi qualche secondo: l'IA sta scrivendo il programma completo (moduli e titoli delle lezioni).</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 3: CONTENUTI -->
+    <div class="box">
+        <div class="flex items-start gap-4">
+            <div class="step-number">3</div>
+            <div>
+                <h2 class="text-2xl font-bold text-white mb-4">Vedere i Contenuti</h2>
+                <p class="text-gray-300 mb-4">
+                    Una volta generata la struttura, ti troverai nella dashboard del corso.
+                </p>
+                <ul class="space-y-3 text-gray-300">
+                    <li>Clicca su una <strong>Lezione</strong> nel menu a destra per aprirla.</li>
+                    <li>La prima volta che apri una lezione, l'IA impiegherà qualche secondo per <strong>scrivere il testo</strong> e <strong>disegnare l'immagine</strong> di copertina.</li>
+                    <li>Se vuoi generare tutto subito, clicca il tasto rosso in alto a destra <strong>"GENERA CORSO COMPLETO"</strong>.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 4: ESPORTAZIONE -->
+    <div class="box">
+        <div class="flex items-start gap-4">
+            <div class="step-number">4</div>
+            <div>
+                <h2 class="text-2xl font-bold text-white mb-4">Esportare e Vendere</h2>
+                <p class="text-gray-300 mb-4">
+                    Usa i pulsanti nella barra in alto per scaricare il tuo lavoro:
+                </p>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-zinc-900 rounded border border-zinc-800">
+                        <strong class="text-blue-400">Scarica E-book (PDF)</strong><br>
+                        Scarica l'intero corso impaginato come un libro PDF professionale. Perfetto per essere venduto su Gumroad o Amazon.
+                    </div>
+                    <div class="p-4 bg-zinc-900 rounded border border-zinc-800">
+                        <strong class="text-green-500">Landing Page (HTML)</strong><br>
+                        Scarica una pagina web pronta all'uso per vendere il corso. Dovrai solo inserire il tuo link di pagamento (PayPal/Stripe).
+                    </div>
+                    <div class="p-4 bg-zinc-900 rounded border border-zinc-800">
+                        <strong class="text-gray-400">Esporta (JSON)</strong><br>
+                        Salva il file del corso sul tuo PC per poterlo ricaricare e modificare in futuro usando il tasto "Importa".
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-12 text-center text-gray-500 text-sm">
+        &copy; CourseFlix AI - Piattaforma Didattica Intelligente
+    </footer>
+
+</body>
+</html>
