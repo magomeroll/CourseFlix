@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ChevronRight, Upload, Settings, X, Save, Key } from 'lucide-react';
+import { Search, ChevronRight, Upload, Settings, X, Save, Key, HelpCircle } from 'lucide-react';
 import { Course } from '../types';
 
 interface HeroProps {
@@ -26,6 +26,10 @@ const Hero: React.FC<HeroProps> = ({ onStart, onImport }) => {
 
   const handleImportClick = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleInstructionsClick = () => {
+    window.open('/instructions.html', '_blank');
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,6 +81,12 @@ const Hero: React.FC<HeroProps> = ({ onStart, onImport }) => {
       <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-30">
          <div className="text-red-600 font-extrabold text-2xl tracking-tighter cursor-pointer">COURSEFLIX</div>
          <div className="flex gap-3">
+             <button 
+                onClick={handleInstructionsClick}
+                className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full border border-green-500 backdrop-blur-sm transition-all text-sm font-bold uppercase hover:scale-105 shadow-lg shadow-green-900/20"
+             >
+                <HelpCircle className="w-4 h-4" /> Istruzioni
+             </button>
              <button 
                 onClick={handleImportClick}
                 className="flex items-center gap-2 bg-neutral-900/80 hover:bg-neutral-800 text-white px-4 py-2 rounded-full border border-neutral-700 backdrop-blur-sm transition-all text-sm font-bold uppercase hover:scale-105"
