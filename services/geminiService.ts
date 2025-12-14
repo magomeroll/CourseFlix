@@ -239,7 +239,7 @@ export const generateLessonImage = async (courseTitle: string, lessonTitle: stri
     try {
         const ai = getAiClient();
 
-        // Arrays for randomization to ensure variety
+        // Arrays for randomization to ensure variety even with paid keys (avoids visual monotony)
         const styles = ["Cinematic Documentary", "Minimalist Modern", "Cyberpunk Neon", "Warm Academy", "Abstract Tech", "Hyper-realistic Studio"];
         const lightings = ["Soft Natural Light", "Dramatic Hard Shadows", "Neon Rim Light", "Golden Hour", "Studio Softbox"];
         const angles = ["Wide Angle", "Close-up Detail", "Overhead Flat Lay", "Isometric View", "Low Angle Hero Shot"];
