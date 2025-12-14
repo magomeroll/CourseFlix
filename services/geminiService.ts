@@ -248,22 +248,23 @@ export const generateLessonImage = async (courseTitle: string, lessonTitle: stri
         const randomStyle = styles[Math.floor(Math.random() * styles.length)];
         const randomLight = lightings[Math.floor(Math.random() * lightings.length)];
         const randomAngle = angles[Math.floor(Math.random() * angles.length)];
-        const randomSeed = Math.floor(Math.random() * 1000000);
+        
+        // Use a random string for seed to make it textually distinct
+        const randomSeed = Math.random().toString(36).substring(7);
 
+        // REVERSED PROMPT PRIORITY: Lesson Title first to ensure it drives the subject
         const prompt = `
-          Create a unique, high-quality photorealistic thumbnail image for an online course lesson.
+          [VARIATION ID: ${randomSeed}]
+          Create a high-quality photorealistic thumbnail image.
           
-          COURSE CONTEXT: "${courseTitle}"
-          LESSON TOPIC: "${lessonTitle}"
+          SUBJECT: "${lessonTitle}"
+          CONTEXT: This is a lesson part of the course "${courseTitle}".
           
-          MANDATORY VISUAL PARAMETERS:
-          - Style: ${randomStyle}
-          - Lighting: ${randomLight}
-          - Camera Angle: ${randomAngle}
-          - NO TEXT: Do not include any text, letters, or words in the image.
-          - Vibe: Professional, Premium, Educational.
+          VISUAL STYLE: ${randomStyle}
+          LIGHTING: ${randomLight}
+          ANGLE: ${randomAngle}
           
-          VARIATION SEED: ${randomSeed}
+          IMPORTANT: Do not include text. Focus on the specific action or object described in the SUBJECT.
         `;
 
         const response = await ai.models.generateContent({
