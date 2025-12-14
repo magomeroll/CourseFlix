@@ -1,5 +1,5 @@
 
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type, Schema } from "@google/genai";
 import { Suggestion, Course } from "../types";
 
 // Helper to get client with priority: LocalStorage > Env
@@ -17,18 +17,24 @@ const getAiClient = () => {
 export const suggestCategories = async (query: string): Promise<Suggestion[]> => {
   const ai = getAiClient();
   
+  const schema: Schema = {
+    type: Type.ARRAY,
+    items: {
+      type: Type.OBJECT,
+      properties: {
+        title: { type: Type.STRING },
+        description: { type: Type.STRING },
+      },
+      required: ["title", "description"],
+    },
+  };
+
   const prompt = `
     L'utente vuole imparare: "${query}".
     Agisci come un consulente educativo esperto.
     Analizza la richiesta. Se è molto generica, suggerisci 4 macro-settori distinti.
     Se la richiesta è già specifica, suggerisci 4 varianti o approcci diversi a quel tema.
     Sii breve e accattivante. Lingua: Italiano.
-
-    RISPONDI ESCLUSIVAMENTE CON UN ARRAY JSON. Esempio:
-    [
-      { "title": "Titolo 1", "description": "Descrizione 1" },
-      { "title": "Titolo 2", "description": "Descrizione 2" }
-    ]
   `;
 
   try {
@@ -37,11 +43,12 @@ export const suggestCategories = async (query: string): Promise<Suggestion[]> =>
       contents: prompt,
       config: {
         responseMimeType: "application/json",
+        responseSchema: schema,
+        systemInstruction: "Sei un generatore di corsi professionali.",
       },
     });
 
-    const text = response.text || "[]";
-    const data = JSON.parse(text);
+    const data = JSON.parse(response.text || "[]");
     return data.map((item: any, index: number) => ({
       id: `cat-${index}`,
       title: item.title,
@@ -56,6 +63,18 @@ export const suggestCategories = async (query: string): Promise<Suggestion[]> =>
 export const suggestSpecificTopics = async (category: string, userRefinement?: string): Promise<Suggestion[]> => {
   const ai = getAiClient();
 
+  const schema: Schema = {
+    type: Type.ARRAY,
+    items: {
+      type: Type.OBJECT,
+      properties: {
+        title: { type: Type.STRING },
+        description: { type: Type.STRING },
+      },
+      required: ["title", "description"],
+    },
+  };
+
   let promptContext = `L'utente ha scelto il settore: "${category}".`;
   if (userRefinement) {
     promptContext += ` Inoltre, l'utente ha specificato: "${userRefinement}".`;
@@ -66,12 +85,6 @@ export const suggestSpecificTopics = async (category: string, userRefinement?: s
     Suggerisci 4 argomenti specifici ("nicchie") per un corso pratico e vendibile basato su queste indicazioni.
     I titoli devono essere accattivanti, pronti per la vendita.
     Lingua: Italiano.
-
-    RISPONDI ESCLUSIVAMENTE CON UN ARRAY JSON. Esempio:
-    [
-      { "title": "Titolo Nicchia 1", "description": "Descrizione breve" },
-      { "title": "Titolo Nicchia 2", "description": "Descrizione breve" }
-    ]
   `;
 
   try {
@@ -80,11 +93,11 @@ export const suggestSpecificTopics = async (category: string, userRefinement?: s
       contents: prompt,
       config: {
         responseMimeType: "application/json",
+        responseSchema: schema,
       },
     });
 
-    const text = response.text || "[]";
-    const data = JSON.parse(text);
+    const data = JSON.parse(response.text || "[]");
     return data.map((item: any, index: number) => ({
       id: `topic-${index}`,
       title: item.title,
@@ -99,6 +112,41 @@ export const suggestSpecificTopics = async (category: string, userRefinement?: s
 export const generateCourseStructure = async (topic: string, userRefinement?: string): Promise<Course | null> => {
   const ai = getAiClient();
 
+  const schema: Schema = {
+    type: Type.OBJECT,
+    properties: {
+      title: { type: Type.STRING },
+      description: { type: Type.STRING },
+      category: { type: Type.STRING },
+      difficulty: { type: Type.STRING, enum: ["Beginner", "Intermediate", "Advanced"] },
+      totalDuration: { type: Type.STRING },
+      // removed instructor from AI generation to force it later
+      modules: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            title: { type: Type.STRING },
+            lessons: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  title: { type: Type.STRING },
+                  duration: { type: Type.STRING },
+                  description: { type: Type.STRING },
+                },
+                required: ["title", "duration", "description"],
+              },
+            },
+          },
+          required: ["title", "lessons"],
+        },
+      },
+    },
+    required: ["title", "description", "modules", "totalDuration"],
+  };
+
   let promptContext = `Argomento principale: "${topic}".`;
   if (userRefinement) {
     promptContext += ` Nota specifica dell'utente: "${userRefinement}".`;
@@ -111,24 +159,6 @@ export const generateCourseStructure = async (topic: string, userRefinement?: st
     Struttura: 4-6 moduli. Ogni modulo: 3-5 lezioni.
     Titoli creativi e descrizioni brevi ma potenti.
     Lingua: Italiano.
-
-    RISPONDI ESCLUSIVAMENTE CON UN OGGETTO JSON CHE SEGUE QUESTA STRUTTURA:
-    {
-      "title": "Titolo del Corso Accattivante",
-      "description": "Descrizione generale del corso",
-      "category": "Categoria",
-      "difficulty": "Beginner", 
-      "totalDuration": "es. 4 Ore",
-      "modules": [
-        {
-          "title": "Titolo Modulo 1",
-          "lessons": [
-             { "title": "Titolo Lezione 1", "duration": "10 min", "description": "Cosa si impara" },
-             { "title": "Titolo Lezione 2", "duration": "15 min", "description": "Cosa si impara" }
-          ]
-        }
-      ]
-    }
   `;
 
   try {
@@ -137,32 +167,26 @@ export const generateCourseStructure = async (topic: string, userRefinement?: st
       contents: prompt,
       config: {
         responseMimeType: "application/json",
+        responseSchema: schema,
+        thinkingConfig: { thinkingBudget: 0 } 
       },
     });
 
-    const text = response.text || "{}";
-    const data = JSON.parse(text);
+    const data = JSON.parse(response.text || "{}");
     
-    // Enrich with IDs and Fallbacks
-    const enhancedModules = (data.modules || []).map((m: any, mIdx: number) => ({
-      title: m.title || `Modulo ${mIdx + 1}`,
-      lessons: (m.lessons || []).map((l: any, lIdx: number) => ({
+    // Enrich with IDs
+    const enhancedModules = data.modules.map((m: any, mIdx: number) => ({
+      ...m,
+      lessons: m.lessons.map((l: any, lIdx: number) => ({
         ...l,
-        title: l.title || `Lezione ${lIdx + 1}`,
-        description: l.description || "Lezione pratica.",
-        duration: l.duration || "10 min",
         id: `l-${mIdx}-${lIdx}-${Date.now()}`
       }))
     }));
 
     return {
       id: `course-${Date.now()}`,
-      title: data.title || "Nuovo Corso",
-      description: data.description || "Descrizione non disponibile.",
-      category: data.category || "Generale",
-      difficulty: data.difficulty || "Beginner",
-      totalDuration: data.totalDuration || "3 Ore",
-      instructor: "CourseFlix AI",
+      ...data,
+      instructor: "CourseFlix AI", // HARDCODED INSTRUCTOR
       modules: enhancedModules,
       thumbnailUrl: `https://picsum.photos/1920/1080?random=${Date.now()}`,
     };
