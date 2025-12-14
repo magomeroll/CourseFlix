@@ -239,23 +239,31 @@ export const generateLessonImage = async (courseTitle: string, lessonTitle: stri
     try {
         const ai = getAiClient();
 
-        // Generiamo un seed casuale per garantire varietà ogni volta che la funzione viene chiamata (es. rigenerazione)
+        // Arrays for randomization to ensure variety
+        const styles = ["Cinematic Documentary", "Minimalist Modern", "Cyberpunk Neon", "Warm Academy", "Abstract Tech", "Hyper-realistic Studio"];
+        const lightings = ["Soft Natural Light", "Dramatic Hard Shadows", "Neon Rim Light", "Golden Hour", "Studio Softbox"];
+        const angles = ["Wide Angle", "Close-up Detail", "Overhead Flat Lay", "Isometric View", "Low Angle Hero Shot"];
+
+        // Pick random elements
+        const randomStyle = styles[Math.floor(Math.random() * styles.length)];
+        const randomLight = lightings[Math.floor(Math.random() * lightings.length)];
+        const randomAngle = angles[Math.floor(Math.random() * angles.length)];
         const randomSeed = Math.floor(Math.random() * 1000000);
 
         const prompt = `
-          Create a unique, cinematic, high-quality photorealistic thumbnail image for an online course lesson.
+          Create a unique, high-quality photorealistic thumbnail image for an online course lesson.
           
           COURSE CONTEXT: "${courseTitle}"
           LESSON TOPIC: "${lessonTitle}"
           
-          VISUAL INSTRUCTIONS:
-          - Create a specific visual representation of the lesson topic.
-          - Style: Professional, cinematic documentary style, 4k, sharp focus, detailed.
-          - Lighting: Dramatic, studio quality.
-          - Composition: Balanced, professional.
+          MANDATORY VISUAL PARAMETERS:
+          - Style: ${randomStyle}
+          - Lighting: ${randomLight}
+          - Camera Angle: ${randomAngle}
           - NO TEXT: Do not include any text, letters, or words in the image.
+          - Vibe: Professional, Premium, Educational.
           
-          VARIATION SEED: ${randomSeed} (Use this to create a unique image variation).
+          VARIATION SEED: ${randomSeed}
         `;
 
         const response = await ai.models.generateContent({
@@ -274,7 +282,6 @@ export const generateLessonImage = async (courseTitle: string, lessonTitle: stri
         return null;
     } catch (error) {
         console.error("Image generation failed", error);
-        // Fail silently for images, return null so we use the default cover
         return null;
     }
 }
