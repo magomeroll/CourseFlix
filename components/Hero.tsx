@@ -161,6 +161,7 @@ const Hero: React.FC<HeroProps> = ({ onStart, onImport }) => {
   const [apiKey, setApiKey] = useState('');
   const [testingKey, setTestingKey] = useState(false);
   const [keyStatus, setKeyStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [statusMessage, setStatusMessage] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -210,16 +211,20 @@ const Hero: React.FC<HeroProps> = ({ onStart, onImport }) => {
     if (!apiKey.trim()) return;
     setTestingKey(true);
     setKeyStatus('idle');
-    const isValid = await testApiKey(apiKey.trim());
+    setStatusMessage('');
+    
+    const result = await testApiKey(apiKey.trim());
+    
     setTestingKey(false);
-    setKeyStatus(isValid ? 'success' : 'error');
+    setKeyStatus(result.success ? 'success' : 'error');
+    setStatusMessage(result.message);
   };
 
   const saveSettings = () => {
     if (apiKey.trim()) {
         localStorage.setItem("courseflix_api_key", apiKey.trim());
         if (keyStatus !== 'success') {
-            alert("Chiave salvata, ma attenzione: il test di validità non è stato superato o eseguito.");
+            alert("Chiave salvata, ma attenzione: il test non è stato superato.");
         } else {
             alert("Chiave API salvata e verificata con successo!");
         }
@@ -367,25 +372,33 @@ const Hero: React.FC<HeroProps> = ({ onStart, onImport }) => {
                         <input 
                             type="password" 
                             value={apiKey}
-                            onChange={(e) => { setApiKey(e.target.value); setKeyStatus('idle'); }}
+                            onChange={(e) => { setApiKey(e.target.value); setKeyStatus('idle'); setStatusMessage(''); }}
                             className="w-full bg-black border border-neutral-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-red-600 focus:outline-none placeholder-neutral-600"
                             placeholder="Incolla qui la tua chiave (AIzaSy...)"
                         />
                     </div>
 
                     {/* Status & Test Button */}
-                    <div className="flex justify-between items-center mb-6">
-                        <div className="text-sm">
-                            {keyStatus === 'success' && <span className="text-green-500 flex items-center gap-1"><CheckCircle className="w-4 h-4"/> Chiave Valida!</span>}
-                            {keyStatus === 'error' && <span className="text-red-500 flex items-center gap-1"><AlertTriangle className="w-4 h-4"/> Chiave Errata</span>}
+                    <div className="mb-6">
+                        <div className="flex justify-between items-center mb-2">
+                             <div className="text-sm">
+                                {keyStatus === 'success' && <span className="text-green-500 flex items-center gap-1"><CheckCircle className="w-4 h-4"/> Chiave Valida!</span>}
+                                {keyStatus === 'error' && <span className="text-red-500 flex items-center gap-1"><AlertTriangle className="w-4 h-4"/> Errore</span>}
+                            </div>
+                            <button 
+                                onClick={handleTestKey}
+                                disabled={testingKey || !apiKey}
+                                className="text-xs bg-neutral-800 hover:bg-neutral-700 text-white px-3 py-2 rounded border border-neutral-600 transition"
+                            >
+                                {testingKey ? <Loader2 className="w-4 h-4 animate-spin"/> : "Testa Chiave"}
+                            </button>
                         </div>
-                        <button 
-                            onClick={handleTestKey}
-                            disabled={testingKey || !apiKey}
-                            className="text-xs bg-neutral-800 hover:bg-neutral-700 text-white px-3 py-2 rounded border border-neutral-600 transition"
-                        >
-                            {testingKey ? <Loader2 className="w-4 h-4 animate-spin"/> : "Testa Chiave"}
-                        </button>
+                        {/* Specific error message display */}
+                        {statusMessage && (
+                            <div className={`text-xs p-3 rounded border ${keyStatus === 'success' ? 'bg-green-900/20 border-green-800 text-green-200' : 'bg-red-900/20 border-red-800 text-red-200'}`}>
+                                {statusMessage}
+                            </div>
+                        )}
                     </div>
 
                     <button 
