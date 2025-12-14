@@ -239,12 +239,23 @@ export const generateLessonImage = async (courseTitle: string, lessonTitle: stri
     try {
         const ai = getAiClient();
 
+        // Generiamo un seed casuale per garantire varietà ogni volta che la funzione viene chiamata (es. rigenerazione)
+        const randomSeed = Math.floor(Math.random() * 1000000);
+
         const prompt = `
-          Create a cinematic, high-quality photorealistic thumbnail image for an online course lesson.
-          Course Topic: ${courseTitle}
-          Lesson Topic: ${lessonTitle}
-          Style: Professional, cinematic documentary style, 4k, sharp focus, detailed.
-          No text overlay.
+          Create a unique, cinematic, high-quality photorealistic thumbnail image for an online course lesson.
+          
+          COURSE CONTEXT: "${courseTitle}"
+          LESSON TOPIC: "${lessonTitle}"
+          
+          VISUAL INSTRUCTIONS:
+          - Create a specific visual representation of the lesson topic.
+          - Style: Professional, cinematic documentary style, 4k, sharp focus, detailed.
+          - Lighting: Dramatic, studio quality.
+          - Composition: Balanced, professional.
+          - NO TEXT: Do not include any text, letters, or words in the image.
+          
+          VARIATION SEED: ${randomSeed} (Use this to create a unique image variation).
         `;
 
         const response = await ai.models.generateContent({
