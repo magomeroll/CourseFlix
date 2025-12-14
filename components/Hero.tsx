@@ -1,7 +1,9 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ChevronRight, Upload, Settings, X, Save, Key, HelpCircle } from 'lucide-react';
+import { Search, ChevronRight, Upload, Settings, X, Save, Key, HelpCircle, CheckCircle, AlertTriangle, Loader2 } from 'lucide-react';
 import { Course } from '../types';
+import { testApiKey } from '../services/geminiService';
 
 interface HeroProps {
   onStart: (query: string) => void;
@@ -157,6 +159,8 @@ const Hero: React.FC<HeroProps> = ({ onStart, onImport }) => {
   const [input, setInput] = useState('');
   const [showSettings, setShowSettings] = useState(false);
   const [apiKey, setApiKey] = useState('');
+  const [testingKey, setTestingKey] = useState(false);
+  const [keyStatus, setKeyStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -202,10 +206,23 @@ const Hero: React.FC<HeroProps> = ({ onStart, onImport }) => {
     event.target.value = '';
   };
 
+  const handleTestKey = async () => {
+    if (!apiKey.trim()) return;
+    setTestingKey(true);
+    setKeyStatus('idle');
+    const isValid = await testApiKey(apiKey.trim());
+    setTestingKey(false);
+    setKeyStatus(isValid ? 'success' : 'error');
+  };
+
   const saveSettings = () => {
     if (apiKey.trim()) {
         localStorage.setItem("courseflix_api_key", apiKey.trim());
-        alert("Chiave API salvata con successo!");
+        if (keyStatus !== 'success') {
+            alert("Chiave salvata, ma attenzione: il test di validità non è stato superato o eseguito.");
+        } else {
+            alert("Chiave API salvata e verificata con successo!");
+        }
         setShowSettings(false);
     } else {
         localStorage.removeItem("courseflix_api_key");
@@ -345,15 +362,30 @@ const Hero: React.FC<HeroProps> = ({ onStart, onImport }) => {
                         </a>
                     </p>
                     
-                    <div className="mb-6">
+                    <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-300 mb-2">Google Gemini API Key</label>
                         <input 
                             type="password" 
                             value={apiKey}
-                            onChange={(e) => setApiKey(e.target.value)}
+                            onChange={(e) => { setApiKey(e.target.value); setKeyStatus('idle'); }}
                             className="w-full bg-black border border-neutral-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-red-600 focus:outline-none placeholder-neutral-600"
                             placeholder="Incolla qui la tua chiave (AIzaSy...)"
                         />
+                    </div>
+
+                    {/* Status & Test Button */}
+                    <div className="flex justify-between items-center mb-6">
+                        <div className="text-sm">
+                            {keyStatus === 'success' && <span className="text-green-500 flex items-center gap-1"><CheckCircle className="w-4 h-4"/> Chiave Valida!</span>}
+                            {keyStatus === 'error' && <span className="text-red-500 flex items-center gap-1"><AlertTriangle className="w-4 h-4"/> Chiave Errata</span>}
+                        </div>
+                        <button 
+                            onClick={handleTestKey}
+                            disabled={testingKey || !apiKey}
+                            className="text-xs bg-neutral-800 hover:bg-neutral-700 text-white px-3 py-2 rounded border border-neutral-600 transition"
+                        >
+                            {testingKey ? <Loader2 className="w-4 h-4 animate-spin"/> : "Testa Chiave"}
+                        </button>
                     </div>
 
                     <button 
