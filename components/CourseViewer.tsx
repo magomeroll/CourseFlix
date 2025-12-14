@@ -189,6 +189,13 @@ const CourseViewer: React.FC<CourseViewerProps> = ({
             const needsContent = !item.lesson.content;
             const needsImage = !item.lesson.imageUrl;
 
+            // --- CRUCIAL FIX FOR FREE TIER ---
+            // Execute sequentially with a delay to prevent Rate Limits and Caching issues
+            // This mimics the "manual click" behavior that works
+            if (needsImage) {
+                 await new Promise(resolve => setTimeout(resolve, 3000)); // 3 seconds delay
+            }
+
             const contentPromise = needsContent ? onGenerateLessonContent(item.lesson) : Promise.resolve(item.lesson.content);
             const imagePromise = needsImage ? onGenerateLessonImage(item.lesson) : Promise.resolve(item.lesson.imageUrl);
 
