@@ -36,6 +36,7 @@ const INSTRUCTIONS_HTML = `
         .highlight { color: #dc2626; font-weight: bold; }
         .box { background: #111; border: 1px solid #333; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
         a { color: #60a5fa; text-decoration: underline; }
+        .warning-box { background: rgba(220, 38, 38, 0.1); border: 1px solid #dc2626; padding: 15px; border-radius: 8px; margin-top: 15px; }
     </style>
 </head>
 <body class="p-6 md:p-12 max-w-4xl mx-auto">
@@ -57,7 +58,6 @@ const INSTRUCTIONS_HTML = `
                     <li>Inserisci una nuova password nei campi appositi.</li>
                     <li>Clicca su <strong>Aggiorna Password</strong>.</li>
                 </ol>
-                <p class="mt-4 text-sm text-gray-400">⚠️ Questo passaggio è fondamentale per poter rientrare nell'app in futuro senza dover richiedere un nuovo link via email.</p>
             </div>
         </div>
     </div>
@@ -67,20 +67,32 @@ const INSTRUCTIONS_HTML = `
         <div class="flex items-start gap-4">
             <div class="step-number">1</div>
             <div>
-                <h2 class="text-2xl font-bold text-white mb-4">Configurare la Chiave API (Gratis)</h2>
-                <p class="mb-4">Per far funzionare l'Intelligenza Artificiale, hai bisogno di una "chiave" gratuita fornita da Google. È facile da ottenere:</p>
+                <h2 class="text-2xl font-bold text-white mb-4">Configurare la Chiave API (Importante)</h2>
+                <p class="mb-4">Per far funzionare l'Intelligenza Artificiale, hai bisogno di una "chiave" fornita da Google. Vai su <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a> per crearla.</p>
                 
-                <ol class="list-decimal list-inside space-y-3 ml-2 text-gray-300">
-                    <li>Apri questo link: <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>.</li>
-                    <li>Accedi con il tuo account <strong>Google/Gmail</strong>.</li>
-                    <li>Clicca sul pulsante blu <strong>"Create API key"</strong>.</li>
-                    <li>Seleziona "Create API key in new project" (o un progetto esistente se ne hai uno).</li>
-                    <li>Apparirà una stringa lunga che inizia con <code>AIza...</code>. <strong>Copiala</strong>.</li>
-                    <li>Torna su CourseFlix, clicca l'icona dell'<strong>Ingranaggio</strong> in alto a destra.</li>
-                    <li>Incolla la chiave e clicca <strong>Salva</strong>.</li>
-                </ol>
-                <div class="mt-4 bg-black p-3 rounded text-sm text-gray-400 border border-gray-700">
-                    💡 <strong>Nota:</strong> Questa operazione va fatta una volta sola. Il browser ricorderà la tua chiave.
+                <div class="grid md:grid-cols-2 gap-6 mt-6">
+                    <div class="p-4 bg-zinc-900 rounded border border-zinc-700">
+                        <strong class="text-green-400 text-lg">Piano Gratuito (Free Tier)</strong>
+                        <ul class="text-sm text-gray-400 mt-2 space-y-2">
+                            <li>✅ Ottimo per testare l'app.</li>
+                            <li>✅ Genera testi illimitati.</li>
+                            <li>⚠️ <strong>Limite Immagini:</strong> Google limita le richieste al minuto.</li>
+                            <li>⚠️ <strong>Problema Noto:</strong> Se clicchi "Genera Tutto", le immagini potrebbero uscire uguali o fallire. Devi generarle una alla volta manualmente.</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-zinc-900 rounded border border-red-600">
+                        <strong class="text-red-500 text-lg">Piano a Pagamento (Pay-as-you-go)</strong>
+                        <ul class="text-sm text-gray-400 mt-2 space-y-2">
+                            <li>✅ <strong>Consigliato per CourseFlix.</strong></li>
+                            <li>✅ Abilita il tasto "Genera Corso Completo" senza errori.</li>
+                            <li>✅ Immagini sempre uniche e veloci.</li>
+                            <li>💰 <strong>Costo:</strong> Circa <strong>€0.05 (5 centesimi)</strong> per generare un intero corso con 20 lezioni e immagini.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="warning-box text-sm text-red-200">
+                    <strong>Come attivare il piano a pagamento:</strong> Su Google AI Studio, collega un account di fatturazione (Billing) al tuo progetto. Non ci sono costi fissi mensili, paghi solo quello che usi (pochi centesimi).
                 </div>
             </div>
         </div>
@@ -93,10 +105,9 @@ const INSTRUCTIONS_HTML = `
             <div>
                 <h2 class="text-2xl font-bold text-white mb-4">Generare un Corso</h2>
                 <ul class="space-y-3 text-gray-300">
-                    <li>Nella schermata principale, scrivi l'argomento che ti interessa (es. <em>"Yoga per la schiena"</em> o <em>"Programmare in Python"</em>) e premi Invio.</li>
-                    <li>L'IA ti suggerirà prima delle <strong>Macro-Categorie</strong>. Scegline una.</li>
-                    <li>Successivamente ti proporrà delle <strong>Nicchie Specifiche</strong>. Seleziona quella che preferisci.</li>
-                    <li>Attendi qualche secondo: l'IA sta scrivendo il programma completo (moduli e titoli delle lezioni).</li>
+                    <li>Nella schermata principale, scrivi l'argomento che ti interessa e premi Invio.</li>
+                    <li>L'IA ti suggerirà prima delle <strong>Macro-Categorie</strong> e poi delle <strong>Nicchie Specifiche</strong>.</li>
+                    <li>Attendi qualche secondo: l'IA sta scrivendo il programma completo.</li>
                 </ul>
             </div>
         </div>
@@ -108,13 +119,10 @@ const INSTRUCTIONS_HTML = `
             <div class="step-number">3</div>
             <div>
                 <h2 class="text-2xl font-bold text-white mb-4">Vedere i Contenuti</h2>
-                <p class="text-gray-300 mb-4">
-                    Una volta generata la struttura, ti troverai nella dashboard del corso.
-                </p>
                 <ul class="space-y-3 text-gray-300">
                     <li>Clicca su una <strong>Lezione</strong> nel menu a destra per aprirla.</li>
-                    <li>La prima volta che apri una lezione, l'IA impiegherà qualche secondo per <strong>scrivere il testo</strong> e <strong>disegnare l'immagine</strong> di copertina.</li>
-                    <li>Se vuoi generare tutto subito, clicca il tasto rosso in alto a destra <strong>"GENERA CORSO COMPLETO"</strong>.</li>
+                    <li>Se hai una chiave gratuita, genera le lezioni una alla volta.</li>
+                    <li>Se hai collegato la fatturazione, puoi usare il tasto <strong>"GENERA CORSO COMPLETO"</strong> per creare tutto in automatico.</li>
                 </ul>
             </div>
         </div>
@@ -126,21 +134,14 @@ const INSTRUCTIONS_HTML = `
             <div class="step-number">4</div>
             <div>
                 <h2 class="text-2xl font-bold text-white mb-4">Esportare e Vendere</h2>
-                <p class="text-gray-300 mb-4">
-                    Usa i pulsanti nella barra in alto per scaricare il tuo lavoro:
-                </p>
-                <div class="grid md:grid-cols-2 gap-4">
+                <div class="grid md:grid-cols-2 gap-4 mt-4">
                     <div class="p-4 bg-zinc-900 rounded border border-zinc-800">
                         <strong class="text-blue-400">Scarica E-book (PDF)</strong><br>
-                        Scarica l'intero corso impaginato come un libro PDF professionale. Perfetto per essere venduto su Gumroad o Amazon.
+                        Scarica l'intero corso impaginato come un libro PDF professionale.
                     </div>
                     <div class="p-4 bg-zinc-900 rounded border border-zinc-800">
                         <strong class="text-green-500">Landing Page (HTML)</strong><br>
-                        Scarica una pagina web pronta all'uso per vendere il corso. Dovrai solo inserire il tuo link di pagamento (PayPal/Stripe).
-                    </div>
-                    <div class="p-4 bg-zinc-900 rounded border border-zinc-800">
-                        <strong class="text-gray-400">Esporta (JSON)</strong><br>
-                        Salva il file del corso sul tuo PC per poterlo ricaricare e modificare in futuro usando il tasto "Importa".
+                        Scarica una pagina web pronta all'uso per vendere il corso.
                     </div>
                 </div>
             </div>
@@ -358,12 +359,16 @@ const Hero: React.FC<HeroProps> = ({ onStart, onImport }) => {
                     <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-white">
                         <Key className="w-6 h-6 text-red-600" /> Configura API Key
                     </h2>
+                    
+                    <div className="bg-neutral-800 p-3 rounded mb-4 text-xs text-gray-300 border-l-4 border-red-600">
+                         <strong>NOTA COSTI:</strong> La chiave Gratuita ha limiti sulle immagini. Per usare la funzione <em>"Genera Corso Completo"</em> senza errori, collega la fatturazione a Google Cloud.
+                         <br/><br/>
+                         Costo stimato: <strong>€0.05 (5 centesimi)</strong> per generare un intero corso con tutte le immagini.
+                    </div>
+
                     <p className="text-gray-400 mb-6 text-sm leading-relaxed">
-                        Per generare i corsi, devi inserire la tua chiave API di Google Gemini.
-                        <br/>La chiave viene salvata <strong>solo nel tuo browser</strong> per le visite future.
-                        <br />
-                        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-red-500 hover:text-red-400 underline mt-2 inline-block">
-                            Clicca qui per ottenere una chiave gratuita.
+                        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-red-500 hover:text-red-400 underline">
+                            Clicca qui per ottenere una chiave.
                         </a>
                     </p>
                     
