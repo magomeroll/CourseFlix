@@ -4,9 +4,10 @@ import Login from './components/Login';
 import Hero from './components/Hero';
 import CourseBuilder from './components/CourseBuilder';
 import CourseViewer from './components/CourseViewer';
+import UserProfile from './components/UserProfile';
 import { AppState, Suggestion, Course, Lesson } from './types';
 import { suggestCategories, suggestSpecificTopics, generateCourseStructure, generateLessonContent, generateLessonImage, generateCourseIntro } from './services/geminiService';
-import { LogOut, AlertTriangle, ArrowRight } from 'lucide-react';
+import { LogOut, AlertTriangle, ArrowRight, UserCog } from 'lucide-react';
 
 const App: React.FC = () => {
   const [session, setSession] = useState<any>(null);
@@ -18,6 +19,7 @@ const App: React.FC = () => {
   const [selectedTopic, setSelectedTopic] = useState<Suggestion | null>(null);
   const [generatedCourse, setGeneratedCourse] = useState<Course | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
   // Safety Check State
   const [isConfigured] = useState(isSupabaseConfigured());
@@ -35,8 +37,13 @@ const App: React.FC = () => {
     // Listen for changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
+      
+      // Se l'utente arriva da un link di reset password, apri automaticamente il profilo
+      if (event === 'PASSWORD_RECOVERY') {
+        setShowProfile(true);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -50,6 +57,7 @@ const App: React.FC = () => {
         setBypassAuth(false);
     }
     handleReset();
+    setShowProfile(false);
   };
 
 
@@ -171,14 +179,31 @@ const App: React.FC = () => {
 
   return (
     <div className="bg-black min-h-screen text-white relative">
-      {/* Logout Button (Fixed Top Left) */}
-      <button 
-        onClick={handleLogout}
-        className="fixed top-6 left-6 z-50 text-gray-500 hover:text-white flex items-center gap-2 text-xs uppercase font-bold tracking-widest transition-colors bg-black/50 p-2 rounded backdrop-blur"
-        title="Esci"
-      >
-        <LogOut className="w-4 h-4" /> Esci
-      </button>
+      {/* Top Left Controls */}
+      <div className="fixed top-6 left-6 z-50 flex flex-col gap-2">
+          <button 
+            onClick={() => setShowProfile(true)}
+            className="flex items-center gap-2 text-xs uppercase font-bold tracking-widest transition-colors bg-neutral-900/80 hover:bg-neutral-800 text-white p-3 rounded backdrop-blur border border-neutral-700 shadow-lg"
+            title="Profilo Utente"
+          >
+            <UserCog className="w-4 h-4" /> Profilo
+          </button>
+          
+          <button 
+            onClick={handleLogout}
+            className="flex items-center gap-2 text-xs uppercase font-bold tracking-widest transition-colors bg-black/50 hover:bg-red-900/50 text-gray-400 hover:text-white p-3 rounded backdrop-blur"
+            title="Esci"
+          >
+            <LogOut className="w-4 h-4" /> Esci
+          </button>
+      </div>
+
+      {showProfile && (
+        <UserProfile 
+            onClose={() => setShowProfile(false)} 
+            email={session?.user?.email} 
+        />
+      )}
 
       {appState === AppState.HOME && (
         <Hero onStart={handleStart} onImport={handleImportCourseFromHero} />
