@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
 import { supabase } from '../services/supabaseClient';
 import { motion } from 'framer-motion';
-import { Loader2, Lock } from 'lucide-react';
+import { Loader2, Lock, ArrowLeft, Send } from 'lucide-react';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  
+  // Toggle between Login and Forgot Password view
+  const [isResetMode, setIsResetMode] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +31,25 @@ const Login: React.FC = () => {
     }
   };
 
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSuccessMsg(null);
+
+    // Redirect to the current URL after clicking the link in email
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.href,
+    });
+
+    if (error) {
+      setError("Errore nell'invio della mail. Riprova più tardi.");
+    } else {
+      setSuccessMsg("Email di recupero inviata! Controlla la tua casella di posta.");
+    }
+    setLoading(false);
+  };
+
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-black relative overflow-hidden">
       {/* Background Image */}
@@ -42,54 +65,113 @@ const Login: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         className="relative z-20 bg-black/75 backdrop-blur-md border border-neutral-800 p-12 rounded-xl w-full max-w-md shadow-2xl"
       >
-        <h2 className="text-3xl font-bold text-white mb-8">Accedi</h2>
-        
-        {error && (
-          <div className="bg-orange-500/20 border border-orange-500 text-orange-200 p-3 rounded mb-6 text-sm">
-            {error}
-          </div>
+        {!isResetMode ? (
+          /* LOGIN FORM */
+          <>
+            <h2 className="text-3xl font-bold text-white mb-8">Accedi</h2>
+            
+            {error && (
+              <div className="bg-orange-500/20 border border-orange-500 text-orange-200 p-3 rounded mb-6 text-sm">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleLogin} className="space-y-6">
+              <div>
+                <input
+                  type="email"
+                  placeholder="Email o numero di telefono"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-[#333] text-white rounded px-4 py-4 border-none focus:ring-2 focus:ring-red-600 focus:outline-none placeholder-gray-400"
+                  required
+                />
+              </div>
+              <div>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-[#333] text-white rounded px-4 py-4 border-none focus:ring-2 focus:ring-red-600 focus:outline-none placeholder-gray-400"
+                  required
+                />
+              </div>
+              
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded transition-all mt-4 flex justify-center items-center disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {loading ? <Loader2 className="animate-spin" /> : "Accedi"}
+              </button>
+            </form>
+
+            <div className="mt-6 text-center">
+              <button 
+                onClick={() => setIsResetMode(true)}
+                className="text-gray-400 hover:text-white text-sm hover:underline"
+              >
+                Password dimenticata?
+              </button>
+            </div>
+
+            <div className="mt-8 text-neutral-400 text-sm">
+              <p className="mb-4">
+                Prima volta su CourseFlix? <br/>
+                <a href="https://courseflix.it" className="text-white hover:underline">Acquista l'accesso sul sito ufficiale.</a>
+              </p>
+              <p className="text-xs text-neutral-500 flex items-center gap-1">
+                <Lock className="w-3 h-3" /> Pagina protetta da Google reCAPTCHA.
+              </p>
+            </div>
+          </>
+        ) : (
+          /* RESET PASSWORD FORM */
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+             <button 
+                onClick={() => setIsResetMode(false)}
+                className="flex items-center text-gray-400 hover:text-white mb-6 transition-colors"
+             >
+                <ArrowLeft className="w-4 h-4 mr-2" /> Torna al Login
+             </button>
+             
+             <h2 className="text-2xl font-bold text-white mb-4">Recupera Password</h2>
+             <p className="text-gray-400 mb-6 text-sm">Inserisci la tua email. Ti invieremo un link per accedere e impostare una nuova password.</p>
+
+             {error && (
+              <div className="bg-red-500/20 border border-red-500 text-red-200 p-3 rounded mb-6 text-sm">
+                {error}
+              </div>
+            )}
+             {successMsg && (
+              <div className="bg-green-500/20 border border-green-500 text-green-200 p-3 rounded mb-6 text-sm">
+                {successMsg}
+              </div>
+            )}
+
+             <form onSubmit={handleResetPassword} className="space-y-6">
+               <div>
+                <input
+                  type="email"
+                  placeholder="La tua email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-[#333] text-white rounded px-4 py-4 border-none focus:ring-2 focus:ring-red-600 focus:outline-none placeholder-gray-400"
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading || !!successMsg}
+                className="w-full bg-white text-black hover:bg-gray-200 font-bold py-4 rounded transition-all mt-4 flex justify-center items-center disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {loading ? <Loader2 className="animate-spin" /> : <><Send className="w-4 h-4 mr-2" /> Invia Link</>}
+              </button>
+             </form>
+          </motion.div>
         )}
-
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div>
-            <input
-              type="email"
-              placeholder="Email o numero di telefono"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-[#333] text-white rounded px-4 py-4 border-none focus:ring-2 focus:ring-red-600 focus:outline-none placeholder-gray-400"
-              required
-            />
-          </div>
-          <div>
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-[#333] text-white rounded px-4 py-4 border-none focus:ring-2 focus:ring-red-600 focus:outline-none placeholder-gray-400"
-              required
-            />
-          </div>
-          
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded transition-all mt-4 flex justify-center items-center disabled:opacity-70 disabled:cursor-not-allowed"
-          >
-            {loading ? <Loader2 className="animate-spin" /> : "Accedi"}
-          </button>
-        </form>
-
-        <div className="mt-8 text-neutral-400 text-sm">
-          <p className="mb-4">
-            Prima volta su CourseFlix? <br/>
-            <a href="https://www.courseflix.it" className="text-white hover:underline">Acquista l'accesso sul sito ufficiale.</a>
-          </p>
-          <p className="text-xs text-neutral-500 flex items-center gap-1">
-            <Lock className="w-3 h-3" /> Pagina protetta da Google reCAPTCHA.
-          </p>
-        </div>
       </motion.div>
     </div>
   );
