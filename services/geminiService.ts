@@ -14,18 +14,27 @@ const getAiClient = (explicitKey?: string) => {
   return new GoogleGenAI({ apiKey: finalKey });
 };
 
-// --- NUOVA FUNZIONE PER TESTARE LA CHIAVE ---
-export const testApiKey = async (apiKey: string): Promise<boolean> => {
+// --- NUOVA FUNZIONE DIAGNOSTICA ---
+export const testApiKey = async (apiKey: string): Promise<{ success: boolean; message: string }> => {
     try {
         const ai = new GoogleGenAI({ apiKey });
+        // Usiamo un prompt semplicissimo per testare la connessione
         await ai.models.generateContent({
             model: "gemini-2.5-flash",
-            contents: "Test connection",
+            contents: "Ciao",
         });
-        return true;
-    } catch (error) {
+        return { success: true, message: "Connessione avvenuta con successo!" };
+    } catch (error: any) {
         console.error("Test API Key failed:", error);
-        return false;
+        
+        let msg = "Errore generico.";
+        if (error.status === 400) msg = "Chiave non valida (INVALID_ARGUMENT). Controlla di averla copiata bene.";
+        else if (error.status === 403) msg = "Permesso negato (PERMISSION_DENIED). La chiave è corretta ma il progetto Google Cloud potrebbe non avere l'API abilitata.";
+        else if (error.status === 404) msg = "Modello non trovato. Il tuo account potrebbe non avere accesso a 'gemini-2.5-flash'.";
+        else if (error.status === 429) msg = "Quota esaurita (RESOURCE_EXHAUSTED). Hai finito i crediti gratuiti per oggi.";
+        else if (error.message) msg = error.message;
+
+        return { success: false, message: msg };
     }
 };
 
@@ -66,6 +75,7 @@ export const suggestCategories = async (query: string): Promise<Suggestion[]> =>
     console.error("Errore nel suggerire categorie:", error);
     if (error.status === 429) alert("Hai superato la quota gratuita di richieste API per oggi. Riprova più tardi o usa un'altra chiave.");
     else if (error.status === 403 || error.status === 400) alert("API Key non valida o API non abilitata sulla Google Cloud Console. Controlla le impostazioni.");
+    else alert(`Errore API: ${error.message}`);
     return [];
   }
 };
@@ -110,6 +120,7 @@ export const suggestSpecificTopics = async (category: string, userRefinement?: s
   } catch (error: any) {
     console.error("Errore nel suggerire argomenti:", error);
     if (error.status === 429) alert("Quota API esaurita.");
+    else alert(`Errore API: ${error.message}`);
     return [];
   }
 };
