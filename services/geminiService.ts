@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Type, Schema } from "@google/genai";
 import { Suggestion, Course } from "../types";
 
@@ -234,7 +235,7 @@ export const generateLessonImage = async (courseTitle: string, lessonTitle: stri
       Create a cinematic, high-quality photorealistic thumbnail image for an online course lesson.
       Course Topic: ${courseTitle}
       Lesson Topic: ${lessonTitle}
-      Style: Professional, Netflix-documentary style, 4k, sharp focus.
+      Style: Professional, cinematic documentary style, 4k, sharp focus, detailed.
       No text overlay.
     `;
 
