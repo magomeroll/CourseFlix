@@ -120,7 +120,6 @@ export const generateCourseStructure = async (topic: string, userRefinement?: st
       category: { type: Type.STRING },
       difficulty: { type: Type.STRING, enum: ["Beginner", "Intermediate", "Advanced"] },
       totalDuration: { type: Type.STRING },
-      // removed instructor from AI generation to force it later
       modules: {
         type: Type.ARRAY,
         items: {
@@ -168,7 +167,6 @@ export const generateCourseStructure = async (topic: string, userRefinement?: st
       config: {
         responseMimeType: "application/json",
         responseSchema: schema,
-        thinkingConfig: { thinkingBudget: 0 } 
       },
     });
 
