@@ -45,7 +45,7 @@ const Login: React.FC = () => {
     if (error) {
       setError("Errore nell'invio della mail. Riprova più tardi.");
     } else {
-      setSuccessMsg("Email di recupero inviata! Se la mail è corretta, la riceverai nella tua casella di posta.");
+      setSuccessMsg("Email di recupero inviata! Se l'email è corretta, riceverai il link nella tua casella di posta.");
     }
     setLoading(false);
   };
