@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Course, Module, Lesson } from '../types';
-import { Play, Lock, Clock, CheckCircle, List, Info, Award, FileText, Loader2, Sparkles, Image as ImageIcon, Download, Home, User, BookOpen, LayoutTemplate, Upload } from 'lucide-react';
+import { Play, Lock, Clock, CheckCircle, List, Info, Award, FileText, Loader2, Sparkles, Image as ImageIcon, Download, Home, User, BookOpen, LayoutTemplate, Upload, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface CourseViewerProps {
@@ -138,6 +138,33 @@ const CourseViewer: React.FC<CourseViewerProps> = ({
 
     fetchLessonData();
   }, [activeLesson?.id]);
+
+  const handleRegenerateImage = async () => {
+    if (!activeLesson) return;
+    setLoadingImage(true);
+    try {
+        const newImage = await onGenerateLessonImage(activeLesson);
+        if (newImage) {
+             setLocalCourse(prev => {
+                const newModules = prev.modules.map(mod => ({
+                    ...mod,
+                    lessons: mod.lessons.map(les => {
+                        if (les.id === activeLesson.id) {
+                            return { ...les, imageUrl: newImage };
+                        }
+                        return les;
+                    })
+                }));
+                return { ...prev, modules: newModules };
+             });
+             setActiveLesson(prev => prev ? ({ ...prev, imageUrl: newImage }) : null);
+        }
+    } catch (e) {
+        console.error("Error regenerating image", e);
+    } finally {
+        setLoadingImage(false);
+    }
+  };
 
 
   // Enhanced Batch Generation Logic (Now includes Images)
@@ -352,7 +379,7 @@ const CourseViewer: React.FC<CourseViewerProps> = ({
                     <div class="lesson-title">Lezione ${mIdx + 1}.${lIdx + 1}: ${lesson.title}</div>
                     <p style="font-style: italic; color: #666; margin-bottom: 20px;">${lesson.description}</p>
                     
-                    ${lesson.imageUrl ? `<img src="${lesson.imageUrl}" class="lesson-image" alt="Copertina Lezione" />` : ''}
+                    ${(lesson.imageUrl || localCourse.thumbnailUrl) ? `<img src="${lesson.imageUrl || localCourse.thumbnailUrl}" class="lesson-image" alt="Copertina Lezione" />` : ''}
                     
                     <div class="content">${lesson.content || '<p><em>Contenuto non ancora generato.</em></p>'}</div>
                 </div>
@@ -657,6 +684,17 @@ const CourseViewer: React.FC<CourseViewerProps> = ({
                 // ACTIVE LESSON VIEW
                 <>
                     <div className="relative aspect-video w-full bg-neutral-900 group overflow-hidden">
+                        {/* Regenerate Button Overlay */}
+                        <div className="absolute top-4 right-4 z-20">
+                            <button 
+                                onClick={(e) => { e.stopPropagation(); handleRegenerateImage(); }}
+                                className="bg-black/60 hover:bg-black/80 text-white p-2 rounded-full backdrop-blur transition-all hover:rotate-180"
+                                title="Rigenera immagine copertina"
+                            >
+                                <RefreshCw className="w-5 h-5" />
+                            </button>
+                        </div>
+
                         {loadingImage ? (
                             <div className="absolute inset-0 flex flex-col items-center justify-center bg-neutral-900 text-gray-500">
                                 <Sparkles className="w-12 h-12 mb-3 animate-pulse text-red-600" />
