@@ -45,7 +45,7 @@ const Login: React.FC = () => {
     if (error) {
       setError("Errore nell'invio della mail. Riprova più tardi.");
     } else {
-      setSuccessMsg("Email di recupero inviata! Controlla la tua casella di posta.");
+      setSuccessMsg("Email di recupero inviata! Se la mail è corretta, la riceverai nella tua casella di posta.");
     }
     setLoading(false);
   };
@@ -137,7 +137,7 @@ const Login: React.FC = () => {
              </button>
              
              <h2 className="text-2xl font-bold text-white mb-4">Recupera Password</h2>
-             <p className="text-gray-400 mb-6 text-sm">Inserisci la tua email. Ti invieremo un link per accedere e impostare una nuova password.</p>
+             <p className="text-gray-400 mb-6 text-sm">Inserisci la tua email di acquisto. Ti invieremo un link per accedere e impostare una nuova password.</p>
 
              {error && (
               <div className="bg-red-500/20 border border-red-500 text-red-200 p-3 rounded mb-6 text-sm">
