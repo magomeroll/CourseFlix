@@ -35,8 +35,9 @@ const INSTRUCTIONS_HTML = `
         }
         .highlight { color: #dc2626; font-weight: bold; }
         .box { background: #111; border: 1px solid #333; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
-        a { color: #60a5fa; text-decoration: underline; }
-        .warning-box { background: rgba(220, 38, 38, 0.1); border: 1px solid #dc2626; padding: 15px; border-radius: 8px; margin-top: 15px; }
+        a { color: #ef4444; text-decoration: none; font-weight: 600; transition: color 0.2s; }
+        a:hover { color: #f87171; text-decoration: underline; }
+        .warning-box { background: rgba(220, 38, 38, 0.1); border: 1px solid #dc2626; padding: 20px; border-radius: 8px; margin-top: 15px; }
     </style>
 </head>
 <body class="p-6 md:p-12 max-w-4xl mx-auto">
@@ -62,22 +63,22 @@ const INSTRUCTIONS_HTML = `
         </div>
     </div>
 
-    <!-- STEP 1: API KEY -->
+    <!-- STEP 1: API KEY & BILLING -->
     <div class="box border-red-900/50 bg-red-950/10">
         <div class="flex items-start gap-4">
             <div class="step-number">1</div>
             <div>
-                <h2 class="text-2xl font-bold text-white mb-4">Configurare la Chiave API (Importante)</h2>
+                <h2 class="text-2xl font-bold text-white mb-4">Configurare la Chiave API e Fatturazione</h2>
                 <p class="mb-4">Per far funzionare l'Intelligenza Artificiale, hai bisogno di una "chiave" fornita da Google. Vai su <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a> per crearla.</p>
                 
-                <div class="grid md:grid-cols-2 gap-6 mt-6">
+                <div class="grid md:grid-cols-2 gap-6 mt-6 mb-8">
                     <div class="p-4 bg-zinc-900 rounded border border-zinc-700">
                         <strong class="text-green-400 text-lg">Piano Gratuito (Free Tier)</strong>
                         <ul class="text-sm text-gray-400 mt-2 space-y-2">
                             <li>✅ Ottimo per testare l'app.</li>
                             <li>✅ Genera testi illimitati.</li>
                             <li>⚠️ <strong>Limite Immagini:</strong> Google limita le richieste al minuto.</li>
-                            <li>⚠️ <strong>Problema Noto:</strong> Se clicchi "Genera Tutto", le immagini potrebbero uscire uguali o fallire. Devi generarle una alla volta manualmente.</li>
+                            <li>⚠️ <strong>Problema:</strong> Il tasto "Genera Tutto" potrebbe fallire.</li>
                         </ul>
                     </div>
                     <div class="p-4 bg-zinc-900 rounded border border-red-600">
@@ -86,13 +87,34 @@ const INSTRUCTIONS_HTML = `
                             <li>✅ <strong>Consigliato per CourseFlix.</strong></li>
                             <li>✅ Abilita il tasto "Genera Corso Completo" senza errori.</li>
                             <li>✅ Immagini sempre uniche e veloci.</li>
-                            <li>💰 <strong>Costo:</strong> Circa <strong>€0.05 (5 centesimi)</strong> per generare un intero corso con 20 lezioni e immagini.</li>
+                            <li>💰 <strong>Costo:</strong> Circa <strong>€0.05</strong> per intero corso.</li>
                         </ul>
                     </div>
                 </div>
 
-                <div class="warning-box text-sm text-red-200">
-                    <strong>Come attivare il piano a pagamento:</strong> Su Google AI Studio, collega un account di fatturazione (Billing) al tuo progetto. Non ci sono costi fissi mensili, paghi solo quello che usi (pochi centesimi).
+                <div class="bg-black/40 p-6 rounded-xl border border-neutral-800">
+                    <h3 class="text-xl font-bold text-red-500 mb-4 uppercase tracking-wider">Come attivare il piano a pagamento (Passo-Passo)</h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="font-bold text-white mb-1">Fase 1: Crea l'Account di Fatturazione su Google Cloud</h4>
+                            <p class="text-sm text-gray-400 mb-2">Devi registrare un metodo di pagamento (carta) nel pannello di controllo Google.</p>
+                            <a href="https://console.cloud.google.com/billing" target="_blank" class="text-xs bg-zinc-800 px-3 py-2 rounded inline-block mb-2">Apri Console Fatturazione →</a>
+                            <p class="text-xs italic text-gray-500">Non ci sono costi fissi, pagherai solo i pochi centesimi consumati.</p>
+                        </div>
+
+                        <div>
+                            <h4 class="font-bold text-white mb-1">Fase 2: Collega il Billing a Google AI Studio</h4>
+                            <p class="text-sm text-gray-400 mb-2">Ora devi "unire" il metodo di pagamento alla piattaforma che genera i corsi.</p>
+                            <a href="https://aistudio.google.com/app/billing" target="_blank" class="text-xs bg-zinc-800 px-3 py-2 rounded inline-block mb-2">Collega Billing su AI Studio →</a>
+                            <p class="text-xs text-gray-400">Clicca su <strong>"Add Billing"</strong> e seleziona il progetto o l'account creato nella Fase 1.</p>
+                        </div>
+
+                        <div>
+                            <h4 class="font-bold text-white mb-1">Fase 3: Verifica e Genera</h4>
+                            <p class="text-sm text-gray-400">Torna nella lista delle <a href="https://aistudio.google.com/app/apikey" target="_blank">API Key</a> e controlla che compaia la scritta <strong>"Pay-as-you-go"</strong>. Ora sei pronto!</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -361,9 +383,9 @@ const Hero: React.FC<HeroProps> = ({ onStart, onImport }) => {
                     </h2>
                     
                     <div className="bg-neutral-800 p-3 rounded mb-4 text-xs text-gray-300 border-l-4 border-red-600">
-                         <strong>NOTA COSTI:</strong> La chiave Gratuita ha limiti sulle immagini. Per usare la funzione <em>"Genera Corso Completo"</em> senza errori, collega la fatturazione a Google Cloud.
+                         <strong>CONFIGURAZIONE BILLING:</strong> Per sbloccare la velocità massima (Piano Pay-as-you-go), attiva la fatturazione su <a href="https://console.cloud.google.com/billing" target="_blank" className="text-red-400 underline">Google Cloud Billing</a> e collegala in <a href="https://aistudio.google.com/app/billing" target="_blank" className="text-red-400 underline">AI Studio Billing</a>.
                          <br/><br/>
-                         Costo stimato: <strong>€0.05 (5 centesimi)</strong> per generare un intero corso con tutte le immagini.
+                         Costo: <strong>~0.05€ per corso</strong>. Paghi solo al consumo.
                     </div>
 
                     <p className="text-gray-400 mb-6 text-sm leading-relaxed">
